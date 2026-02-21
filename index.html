@@ -88,6 +88,7 @@
 
     /* ===== Hero ===== */
     .hero{
+      height: 200px;
       grid-column: 1 / -1;
       border: 1px solid var(--stroke);
       border-radius: calc(var(--radius) + 6px);
@@ -106,16 +107,17 @@
     .hero-inner{
       position: relative;
       z-index: 1;
-      padding: 40px 18px;
+      padding: 0;
       display:flex;
       align-items:center;
       justify-content:center;
+      height: 100%;
     }
 
     /* 중앙 로고 */
     .hero-logo{
       width: 360px;      /* 원하는 크기로 조절 */
-      height: 140px;      /* 비율 맞춰서 조절 */
+      height: auto;      /* 비율 맞춰서 조절 */
       background: var(--logo-image) center/contain no-repeat;
       filter: drop-shadow(0 8px 25px rgba(0,0,0,.45));
     }
