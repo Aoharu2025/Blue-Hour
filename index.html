@@ -7,18 +7,14 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Diphylleia&family=Grandiflora+One&family=Pretendard:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Diphylleia&family=Pretendard:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root{
-      /* ✅ 네가 업로드한 이미지 경로로 연결 */
-      --bg-image: url("images/background.jpg");
-      --hero-image: url("images/hero.png");
-      --logo-image: url("images/logo.png");
+      --bg-image: url("./images/background.png");
+      --hero-image: url("./images/hero.png");
+      --logo-image: url("./images/logo.png");
 
-      /* 컬러 시스템 */
-      --sky-1:#7fd6ff;
-      --sky-2:#a7b7ff;
       --ink:#0b1220;
       --panel: rgba(255,255,255,.10);
       --stroke: rgba(255,255,255,.18);
@@ -26,28 +22,27 @@
       --text:#eef6ff;
       --muted: rgba(238,246,255,.72);
 
-      --good:#86f7d6;
-      --danger:#ff7ea2;
+      --vacant:#86f7d6;
+      --occupied:#ff7ea2;
 
-      /* ✅ “공석(🔒 없음)”을 강조할 글로우 */
-      --vacantGlow: 0 0 0 2px rgba(134,247,214,.35), 0 10px 30px rgba(134,247,214,.18);
+      --vacantGlow: 0 0 0 2px rgba(134,247,214,.35), 0 12px 34px rgba(134,247,214,.18);
       --softGlow: 0 18px 50px rgba(0,0,0,.32);
+
       --radius: 18px;
     }
 
-    * { box-sizing: border-box; }
-    html,body { height: 100%; }
+    *{ box-sizing:border-box; }
+    html, body{ height:100%; }
     body{
       margin:0;
-      font-family: "Pretendard", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+      font-family:"Pretendard", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
       color: var(--text);
-      background: #0b1220;
+      background:#0b1220;
       overflow-x:hidden;
       position: relative;
-      isolation: isolate; /* ✅ z-index 레이어 안정화 */
+      isolation: isolate;
     }
 
-    /* ✅ 배경 이미지 (진짜로 “고정된 한 장”처럼) */
     body::before{
       content:"";
       position: fixed;
@@ -55,10 +50,8 @@
       background: var(--bg-image) center/cover no-repeat;
       z-index: -2;
       transform: translateZ(0);
-      will-change: transfrom;
+      will-change: transform;
     }
-
-    /* ✅ 오버레이(그라데이션)도 같이 fixed로 고정 */
     body::after{
       content:"";
       position: fixed;
@@ -67,7 +60,7 @@
         radial-gradient(1200px 600px at 20% 10%, rgba(127,214,255,.22), transparent 60%),
         radial-gradient(900px 500px at 80% 20%, rgba(167,183,255,.18), transparent 60%),
         radial-gradient(1000px 700px at 50% 100%, rgba(134,247,214,.10), transparent 55%),
-        linear-gradient(180deg, rgba(11,18,32,.55), rgba(11,18,32,.78));
+        linear-gradient(180deg, rgba(11,18,32,.55), rgba(11,18,32,.80));
       z-index: -1;
       transform: translateZ(0);
       will-change: transform;
@@ -76,61 +69,62 @@
     .app{
       max-width: 1280px;
       margin: 0 auto;
-      padding: 20px 16px 40px;
-      display: grid;
+      padding: 18px 14px 40px;
+      display:grid;
       grid-template-columns: 270px 1fr;
       gap: 16px;
     }
-
     @media (max-width: 980px){
       .app{ grid-template-columns: 1fr; }
     }
 
     /* ===== Hero ===== */
     .hero{
-      height: 180px;
       grid-column: 1 / -1;
       border: 1px solid var(--stroke);
-      border-radius: calc(var(--radius) + 6px);
+      border-radius: calc(var(--radius) + 10px);
       background:
-        linear-gradient(135deg, rgba(127,214,255,.15), rgba(167,183,255,.10)),
+        linear-gradient(135deg, rgba(127,214,255,.14), rgba(167,183,255,.10)),
         var(--hero-image) center/cover no-repeat;
       box-shadow: var(--softGlow);
-      overflow: hidden;
+      overflow:hidden;
       position: relative;
+      height: 180px;
     }
     .hero::after{
       content:"";
-      position:absolute; inset:0;
-      background: linear-gradient(180deg, rgba(11,18,32,.35), rgba(11,18,32,.82));
+      position:absolute;
+      inset:0;
+      background: linear-gradient(180deg, rgba(11,18,32,.28), rgba(11,18,32,.75));
+      pointer-events:none;
     }
     .hero-inner{
       position: relative;
       z-index: 1;
-      padding: 0;
+      height: 100%;
       display:flex;
       align-items:center;
       justify-content:center;
-      height: 100%;
+      padding: 0;
     }
-
-    /* 중앙 로고 */
     .hero-logo{
-      width: 200px;      /* 원하는 크기로 조절 */
-      aspect-ratio: 3 / 1;      /* 비율 맞춰서 조절 */
+      width: 420px;
+      aspect-ratio: 3 / 1;
       background: var(--logo-image) center/contain no-repeat;
-      filter: drop-shadow(0 8px 25px rgba(0,0,0,.45));
+      filter: drop-shadow(0 10px 28px rgba(0,0,0,.45));
+      opacity: .98;
     }
-
     .stats{
       position:absolute;
-      right: 20px;
-      bottom: 20px;
+      right: 16px;
+      bottom: 16px;
       display:flex;
-      gap:10px;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content:flex-end;
     }
     .pill{
-      border: 1px solid var(--stroke);
+      border: 1px solid rgba(255,255,255,.16);
       background: rgba(255,255,255,.08);
       border-radius: 999px;
       padding: 8px 10px;
@@ -138,28 +132,124 @@
       gap: 8px;
       align-items:center;
       backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transform: translateZ(0);
     }
     .pill .dot{
-      width: 10px; height: 10px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
-      background: var(--good);
+      background: var(--vacant);
       box-shadow: 0 0 0 3px rgba(134,247,214,.16);
+      flex: 0 0 auto;
     }
     .pill .dot.occupied{
-      background: var(--danger);
+      background: var(--occupied);
       box-shadow: 0 0 0 3px rgba(255,126,162,.18);
+    }
+    .pill .dot.total{
+      background: rgba(238,246,255,.72);
+      box-shadow: 0 0 0 3px rgba(238,246,255,.10);
     }
     .pill b{ font-size: 13px; }
     .pill span{ font-size: 12px; color: var(--muted); }
 
-    /* ===== Sidebar ===== */
+    @media (max-width: 720px){
+      .hero{ height: 165px; }
+      .hero-logo{ width: min(82vw, 520px); }
+      .stats{ right: 12px; bottom: 12px; gap: 8px; }
+      .pill{ padding: 7px 9px; }
+    }
+
+    /* ===== Mobile academy strip ===== */
+    .mobile-academy-strip{
+      display:none;
+      border: 1px solid var(--stroke);
+      background: var(--panel);
+      border-radius: var(--radius);
+      box-shadow: var(--softGlow);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      overflow-x:auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 10px;
+      gap: 10px;
+      align-items: stretch;
+    }
+    @media (max-width: 980px){
+      .mobile-academy-strip{
+        display:flex;
+        grid-column: 1 / -1;
+      }
+    }
+    .academy-chip{
+      all: unset;
+      cursor:pointer;
+      flex: 0 0 auto;
+      width: 96px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      padding: 10px 10px 8px;
+      text-align:center;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+    }
+    .academy-chip:hover{ transform: translateY(-1px); background: rgba(255,255,255,.09); }
+    .academy-chip.active{
+      border-color: rgba(127,214,255,.35);
+      background: rgba(127,214,255,.10);
+    }
+    .academy-chip .icon{
+      width: 46px;
+      height: 46px;
+      margin: 0 auto 6px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.06);
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .academy-chip .icon img{
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 6px;
+    }
+    .academy-chip .name{
+      font-size: 11px;
+      font-weight: 800;
+      opacity: .9;
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 6px;
+    }
+    .academy-chip .mini{
+      display:flex;
+      justify-content:center;
+      gap: 6px;
+      font-size: 10px;
+      color: rgba(238,246,255,.75);
+      white-space: nowrap;
+    }
+    .mini .v{ color: rgba(220,255,246,.95); }
+    .mini .o{ color: rgba(255,220,230,.95); }
+
+    /* ===== Sidebar (desktop) ===== */
     .sidebar{
       border: 1px solid var(--stroke);
       background: var(--panel);
       border-radius: var(--radius);
       box-shadow: var(--softGlow);
       backdrop-filter: blur(12px);
-      overflow: hidden;
+      -webkit-backdrop-filter: blur(12px);
+      overflow:hidden;
+      transform: translateZ(0);
+    }
+    @media (max-width: 980px){
+      .sidebar{ display:none; }
     }
     .sidebar-head{
       padding: 14px 14px 10px;
@@ -170,7 +260,7 @@
       gap: 10px;
     }
     .sidebar-head .title{
-      font-weight: 700;
+      font-weight: 800;
       font-size: 13px;
       letter-spacing: .2px;
       color: rgba(238,246,255,.9);
@@ -205,28 +295,35 @@
       box-shadow: 0 10px 22px rgba(127,214,255,.10);
     }
     .nav-left{
-      display:flex; align-items:center; gap: 10px;
+      display:flex;
+      align-items:center;
+      gap: 10px;
       min-width: 0;
     }
     .nav-icon{
-      width: 34px; height: 34px;
+      width: 34px;
+      height: 34px;
       border-radius: 12px;
       border: 1px solid rgba(255,255,255,.16);
       background: rgba(255,255,255,.08);
       overflow:hidden;
-      display:flex; align-items:center; justify-content:center;
+      display:flex;
+      align-items:center;
+      justify-content:center;
       flex: 0 0 auto;
     }
-    .nav-icon img{ width: 100%; height: 100%; object-fit: cover; }
+    .nav-icon img{ width:100%; height:100%; object-fit:contain; padding: 4px; }
     .nav-name{
       font-size: 13px;
-      font-weight: 700;
+      font-weight: 800;
       white-space: nowrap;
       overflow:hidden;
       text-overflow: ellipsis;
     }
     .nav-meta{
-      display:flex; align-items:center; gap: 8px;
+      display:flex;
+      align-items:center;
+      gap: 8px;
       flex: 0 0 auto;
     }
     .badge{
@@ -236,14 +333,13 @@
       border: 1px solid rgba(255,255,255,.16);
       background: rgba(255,255,255,.08);
       color: rgba(238,246,255,.86);
+      white-space: nowrap;
     }
-    /* ✅ 공석 배지(강조) */
     .badge.vacant{
       border-color: rgba(134,247,214,.35);
       background: rgba(134,247,214,.12);
       color: rgba(220,255,246,.95);
     }
-    /* 비공석 배지 */
     .badge.occupied{
       border-color: rgba(255,126,162,.35);
       background: rgba(255,126,162,.12);
@@ -257,10 +353,12 @@
       border-radius: var(--radius);
       box-shadow: var(--softGlow);
       backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       overflow:hidden;
       display:flex;
       flex-direction:column;
       min-height: 560px;
+      transform: translateZ(0);
     }
     .toolbar{
       padding: 14px;
@@ -356,7 +454,10 @@
       background: linear-gradient(135deg, rgba(127,214,255,.10), rgba(255,255,255,0));
     }
     .group-title{
-      display:flex; align-items:center; gap: 10px; min-width: 0;
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      min-width: 0;
     }
     .group-title b{
       font-size: 13px;
@@ -368,6 +469,7 @@
       font-size: 12px;
       color: var(--muted);
     }
+
     .grid{
       padding: 12px;
       display:grid;
@@ -418,9 +520,8 @@
       flex: 0 0 auto;
       position:relative;
       z-index:1;
+      white-space: nowrap;
     }
-
-    /* ✅ 공석(🔒 없음) 카드 강조 */
     .card.vacant{
       border-color: rgba(134,247,214,.38);
       box-shadow: var(--vacantGlow);
@@ -431,16 +532,12 @@
       background: rgba(134,247,214,.14);
       color: rgba(220,255,246,.95);
     }
-    /* 비공석(🔒 있음) 카드: 살짝 눌러서 “차있음” 느낌 */
-    .card.occupied{
-      opacity: .86;
-    }
+    .card.occupied{ opacity: .86; }
     .card.occupied .tag{
       border-color: rgba(255,126,162,.40);
       background: rgba(255,126,162,.14);
       color: rgba(255,220,230,.95);
     }
-
     .hint{
       margin-top:auto;
       font-size: 11px;
@@ -448,6 +545,7 @@
       position:relative;
       z-index:1;
     }
+
     .empty{
       padding: 18px;
       border: 1px dashed rgba(255,255,255,.18);
@@ -456,23 +554,82 @@
       color: rgba(238,246,255,.75);
       text-align:center;
     }
+
+    /* ===== Modal ===== */
+    .modal{
+      position: fixed;
+      inset: 0;
+      display:none;
+      z-index: 9999;
+    }
+    .modal.open{ display:block; }
+    .modal-backdrop{
+      position:absolute;
+      inset:0;
+      background: rgba(0,0,0,.45);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+    .modal-panel{
+      position:absolute;
+      left:50%;
+      top:55%;
+      transform: translate(-50%, -50%);
+      width: min(92vw, 720px);
+      max-height: 80vh;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(20,30,50,.78);
+      box-shadow: 0 30px 80px rgba(0,0,0,.55);
+      overflow:hidden;
+    }
+    .modal-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+    }
+    .modal-head #modalTitle{
+      font-weight: 900;
+      letter-spacing: .2px;
+    }
+    .modal-close{
+      all: unset;
+      cursor:pointer;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.08);
+      font-size: 12px;
+    }
+    .modal-body{
+      padding: 12px;
+      overflow:auto;
+      max-height: calc(80vh - 56px);
+    }
+    @media (max-width: 720px){
+      .modal-body .grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
   </style>
 </head>
 
 <body>
   <div class="app">
+    <!-- Hero -->
     <section class="hero">
       <div class="hero-inner">
-    
-        <!-- ✅ 중앙 로고 -->
-        <div class="hero-logo"></div>
-
-        <!-- 오른쪽 통계 -->
+        <div class="hero-logo" aria-label="logo"></div>
         <div class="stats" id="globalStats"></div>
-
       </div>
     </section>
 
+    <!-- Mobile academy strip -->
+    <div class="mobile-academy-strip" id="mobileAcademyStrip" aria-label="Academy quick bar"></div>
+
+    <!-- Sidebar (desktop) -->
     <aside class="sidebar">
       <div class="sidebar-head">
         <div class="title">Academy</div>
@@ -481,6 +638,7 @@
       <nav class="nav" id="academyNav"></nav>
     </aside>
 
+    <!-- Main -->
     <main class="main">
       <div class="toolbar">
         <div class="toolbar-left">
@@ -489,7 +647,6 @@
         </div>
 
         <div class="toolbar-right">
-          <!-- ✅ 필터 문구도 공석/비공석 기준으로 -->
           <div class="seg" id="filterSeg">
             <button data-filter="all" class="active">전체</button>
             <button data-filter="vacant">공석만</button>
@@ -498,7 +655,7 @@
 
           <div class="search">
             <span style="font-size:12px;opacity:.7;">🔎</span>
-            <input id="search" placeholder="이름 검색 (예: 키리후지, 아루, 히마리...)" />
+            <input id="search" placeholder="이름 검색 (전체 범위)" />
           </div>
         </div>
       </div>
@@ -507,8 +664,20 @@
     </main>
   </div>
 
+  <!-- Modal -->
+  <div class="modal" id="academyModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close="1"></div>
+    <div class="modal-panel" role="dialog" aria-modal="true">
+      <div class="modal-head">
+        <div id="modalTitle">Academy</div>
+        <button class="modal-close" type="button" data-close="1">닫기</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
   <script>
-    /* ===== 학원 아이콘(원하면 네 로컬로도 교체 가능) ===== */
+    /* ===== 학원 아이콘(원하면 로컬 경로로 교체 가능) ===== */
     const ASSETS = {
       academyIcons: {
         "총학생회": "https://i.imgur.com/H7juyuM.png",
@@ -522,13 +691,14 @@
         "붉은겨울": "https://i.imgur.com/wYVmPOr.png",
         "발키리": "https://i.imgur.com/cIwxAIc.png",
         "아리우스": "https://i.imgur.com/RgNaSeg.png",
-        "SRT": "https://i.imgur.com/sMbDc2N.png",
-        "와일드헌트": "https://i.imgur.com/FLUpb1T.png",
-        "기타": "https://i.imgur.com/XKvf4LS.png"
+        "SRT": "https://i.imgur.com/XKvf4LS.png",
+        "와일드헌트": "https://i.imgur.com/XKvf4LS.png",
+        "기타": "https://i.imgur.com/XKvf4LS.png",
+        "전체": "" /* 전체는 아이콘 없어도 됨 */
       }
     };
 
-    /* ===== 네 data 그대로 (필요하면 여기만 교체) ===== */
+    /* ===== DATA: 🔒 = 비공석 ===== */
     const data = {
       "총학생회": ["나나가미 린","유라키 모모카","이와비츠 아유무","시라누이 카야","오키 아오이","스모모","하이네"],
       "샬레": ["아로나","프라나"],
@@ -598,61 +768,123 @@
       }
     };
 
-    /* =========================
-       Helpers
-       ========================= */
-    // ✅ 🔒 = 비공석
-    const isOccupied = (name) => String(name).includes("🔒");
-    const isVacant = (name) => !isOccupied(name); // ✅ 공석은 🔒 없음
-    const cleanName = (name) => String(name).replace("🔒", "").trim();
+    /* ===== Helpers ===== */
+    const isOccupied = (name) => String(name).includes("🔒"); // 🔒 = 비공석
+    const isVacant = (name) => !isOccupied(name);
+    const cleanName = (name) => String(name).replace("🔒","").trim();
+
+    function getAcademyNames(){ return Object.keys(data); }
 
     function flattenAcademy(academyValue){
       const rows = [];
       if (Array.isArray(academyValue)){
-        academyValue.forEach(n => rows.push({ group: null, name: n, vacant: isVacant(n), occupied: isOccupied(n) }));
+        academyValue.forEach(n => rows.push({ group:null, name:n, vacant:isVacant(n), occupied:isOccupied(n) }));
       } else if (academyValue && typeof academyValue === "object"){
         Object.keys(academyValue).forEach(group => {
-          academyValue[group].forEach(n => rows.push({ group, name: n, vacant: isVacant(n), occupied: isOccupied(n) }));
+          academyValue[group].forEach(n => rows.push({ group, name:n, vacant:isVacant(n), occupied:isOccupied(n) }));
         });
       }
       return rows;
     }
 
-    function getAcademyNames(){ return Object.keys(data); }
-
-    function computeGlobalStats(){
-      let total = 0, vacant = 0, occupied = 0;
+    function getAllRows(){
+      const all = [];
       getAcademyNames().forEach(a => {
-        const rows = flattenAcademy(data[a]);
-        total += rows.length;
-        vacant += rows.filter(r => r.vacant).length;
-        occupied += rows.filter(r => r.occupied).length;
+        const value = data[a];
+        if (Array.isArray(value)){
+          value.forEach(n => all.push({ academy:a, group:null, name:n, vacant:isVacant(n), occupied:isOccupied(n) }));
+        } else {
+          Object.keys(value).forEach(g => {
+            value[g].forEach(n => all.push({ academy:a, group:g, name:n, vacant:isVacant(n), occupied:isOccupied(n) }));
+          });
+        }
       });
+      return all;
+    }
+
+    function statsFromRows(rows){
+      const total = rows.length;
+      const vacant = rows.filter(r => r.vacant).length;
+      const occupied = rows.filter(r => r.occupied).length;
       return { total, vacant, occupied };
     }
 
     function computeAcademyStats(academy){
       const rows = flattenAcademy(data[academy]);
-      const vacant = rows.filter(r => r.vacant).length;
-      const occupied = rows.filter(r => r.occupied).length;
-      return { total: rows.length, vacant, occupied };
+      return statsFromRows(rows.map(r => ({...r, academy})));
     }
 
-    /* =========================
-       UI State
-       ========================= */
-    const state = { academy: "전체", filter: "all", search: "" };
+    function computeGlobalStats(){
+      return statsFromRows(getAllRows());
+    }
 
+    /* ✅ 검색/필터는 언제나 전체 범위에서 적용 */
+    const state = {
+      academy: "전체",
+      filter: "all",  // all | vacant | occupied
+      search: ""
+    };
+
+    function applySearchAndStatusFilter(rows){
+      const q = state.search.trim().toLowerCase();
+      return rows.filter(r => {
+        if (state.filter === "vacant" && !r.vacant) return false;
+        if (state.filter === "occupied" && !r.occupied) return false;
+        if (!q) return true;
+        return cleanName(r.name).toLowerCase().includes(q);
+      });
+    }
+
+    function computeAcademyStatsFiltered(academy){
+      const rows = flattenAcademy(data[academy]).map(r => ({...r, academy}));
+      return statsFromRows(applySearchAndStatusFilter(rows));
+    }
+
+    function computeGlobalStatsFiltered(){
+      return statsFromRows(applySearchAndStatusFilter(getAllRows()));
+    }
+
+    function sortSeats(arr){
+      return [...arr].sort((a,b) => Number(b.vacant) - Number(a.vacant));
+    }
+
+    /* ===== DOM ===== */
+    const elStats = document.getElementById("globalStats");
     const elNav = document.getElementById("academyNav");
     const elCount = document.getElementById("academyCount");
     const elTitle = document.getElementById("title");
     const elSubtitle = document.getElementById("subtitle");
     const elContent = document.getElementById("content");
-    const elStats = document.getElementById("globalStats");
     const elSearch = document.getElementById("search");
 
+    const elMobileStrip = document.getElementById("mobileAcademyStrip");
+    const elModal = document.getElementById("academyModal");
+    const elModalTitle = document.getElementById("modalTitle");
+    const elModalBody = document.getElementById("modalBody");
+
+    /* ===== Modal ===== */
+    function openModal(){
+      elModal.classList.add("open");
+      elModal.setAttribute("aria-hidden","false");
+      document.body.style.overflow = "hidden";
+    }
+    function closeModal(){
+      elModal.classList.remove("open");
+      elModal.setAttribute("aria-hidden","true");
+      document.body.style.overflow = "";
+    }
+    elModal.addEventListener("click", (e) => {
+      const t = e.target;
+      if (t && t.dataset && t.dataset.close) closeModal();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && elModal.classList.contains("open")) closeModal();
+    });
+
+    /* ===== Render: Global stats (검색 중엔 검색 결과 통계로 표시) ===== */
     function renderGlobal(){
-      const gs = computeGlobalStats();
+      const q = state.search.trim();
+      const gs = q ? computeGlobalStatsFiltered() : computeGlobalStats();
       elStats.innerHTML = `
         <div class="pill">
           <div class="dot"></div>
@@ -663,29 +895,32 @@
           <div><b>${gs.occupied}</b> <span>비공석</span></div>
         </div>
         <div class="pill">
-          <div class="dot" style="background: rgba(238,246,255,.72); box-shadow: 0 0 0 3px rgba(238,246,255,.10);"></div>
-          <div><b>${gs.total}</b> <span>전체 자리</span></div>
+          <div class="dot total"></div>
+          <div><b>${gs.total}</b> <span>${q ? "검색 결과" : "전체 자리"}</span></div>
         </div>
       `;
     }
 
+    /* ===== Render: Sidebar nav (검색 중엔 결과 있는 학원만) ===== */
     function renderNav(){
       const academies = getAcademyNames();
       elCount.textContent = `${academies.length}개`;
 
+      const q = state.search.trim();
       const navItems = ["전체", ...academies];
 
       elNav.innerHTML = navItems.map(name => {
         const icon = ASSETS.academyIcons[name] || "";
-        const st = (name === "전체") ? computeGlobalStats() : computeAcademyStats(name);
+        const st = (name === "전체")
+          ? (q ? computeGlobalStatsFiltered() : computeGlobalStats())
+          : (q ? computeAcademyStatsFiltered(name) : computeAcademyStats(name));
 
-        const vacantBadge = `<span class="badge vacant">공석 ${st.vacant}</span>`;
-        const occupiedBadge = `<span class="badge occupied">비공석 ${st.occupied}</span>`;
-        const totalBadge = `<span class="badge">${st.total}</span>`;
+        if (q && name !== "전체" && st.total === 0) return "";
+
         const active = (state.academy === name) ? "active" : "";
 
         return `
-          <button class="nav-btn ${active}" data-academy="${name}">
+          <button class="nav-btn ${active}" data-academy="${name}" type="button">
             <div class="nav-left">
               <div class="nav-icon">
                 ${icon ? `<img alt="" src="${icon}">` : `<span style="font-size:12px;opacity:.7;">★</span>`}
@@ -693,9 +928,9 @@
               <div class="nav-name">${name}</div>
             </div>
             <div class="nav-meta">
-              ${vacantBadge}
-              ${occupiedBadge}
-              ${totalBadge}
+              <span class="badge vacant">공석 ${st.vacant}</span>
+              <span class="badge occupied">비공석 ${st.occupied}</span>
+              <span class="badge">${st.total}</span>
             </div>
           </button>
         `;
@@ -709,126 +944,459 @@
       });
     }
 
-    function groupRows(academyName){
-      if (academyName === "전체"){
-        return getAcademyNames().map(a => {
-          const rows = flattenAcademy(data[a]).map(r => ({...r, academy: a}));
-          return { groupName: a, rows };
+    /* ===== Render: Mobile strip (항상 전체 탭 포함, 검색 중엔 결과 있는 학원만) ===== */
+    function renderMobileStrip(){
+      if (!elMobileStrip) return;
+
+      const q = state.search.trim();
+      const items = ["전체", ...getAcademyNames()];
+
+      elMobileStrip.innerHTML = items.map(name => {
+        const icon = ASSETS.academyIcons[name] || "";
+        const st = (name === "전체")
+          ? (q ? computeGlobalStatsFiltered() : computeGlobalStats())
+          : (q ? computeAcademyStatsFiltered(name) : computeAcademyStats(name));
+
+        if (q && name !== "전체" && st.total === 0) return "";
+
+        const active = (state.academy === name) ? "active" : "";
+
+        return `
+          <button class="academy-chip ${active}" type="button" data-academy="${name}">
+            <div class="icon">
+              ${name === "전체" ? "★" : (icon ? `<img alt="${name}" src="${icon}">` : "★")}
+            </div>
+            <div class="name">${name}</div>
+            <div class="mini">
+              <span class="v">공석 ${st.vacant}</span>
+              <span class="o">비공석 ${st.occupied}</span>
+            </div>
+          </button>
+        `;
+      }).join("");
+
+      elMobileStrip.querySelectorAll(".academy-chip").forEach(btn => {
+        btn.addEventListener("click", () => {
+          state.academy = btn.dataset.academy;
+
+          // 모바일: 탭 클릭하면 모달로
+          renderModalAcademy(state.academy);
+          openModal();
+
+          renderNav();
+          renderFilter();
+          renderMobileStrip();
         });
-      }
-
-      const value = data[academyName];
-      if (Array.isArray(value)){
-        return [{
-          groupName: academyName,
-          rows: value.map(n => ({ academy: academyName, group: null, name: n, vacant: isVacant(n), occupied: isOccupied(n) }))
-        }];
-      }
-
-      return Object.keys(value).map(g => ({
-        groupName: g,
-        rows: value[g].map(n => ({ academy: academyName, group: g, name: n, vacant: isVacant(n), occupied: isOccupied(n) }))
-      }));
-    }
-
-    function applyFilter(rows){
-      const q = state.search.trim().toLowerCase();
-      return rows.filter(r => {
-        // ✅ 공석만 = 🔒 없음
-        if (state.filter === "vacant" && !r.vacant) return false;
-        // ✅ 비공석만 = 🔒 있음
-        if (state.filter === "occupied" && !r.occupied) return false;
-
-        if (!q) return true;
-        return cleanName(r.name).toLowerCase().includes(q);
       });
     }
 
+    /* ===== Filter UI ===== */
     function renderFilter(){
       document.querySelectorAll("#filterSeg button").forEach(btn => {
         btn.classList.toggle("active", btn.dataset.filter === state.filter);
       });
     }
 
+    document.querySelectorAll("#filterSeg button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        state.filter = btn.dataset.filter;
+
+        renderGlobal();
+        renderNav();
+        renderMobileStrip();
+        renderMain();
+
+        if (elModal.classList.contains("open")) renderModalAcademy(state.academy);
+      });
+    });
+
+    /* ===== Main: 검색 중이면 "전체 검색 결과"만 보여주고, 결과 있는 그룹만 표시 ===== */
     function renderMain(){
-      elTitle.textContent = state.academy;
-      const st = (state.academy === "전체") ? computeGlobalStats() : computeAcademyStats(state.academy);
+      const q = state.search.trim();
+      const effectiveAcademy = q ? "전체" : state.academy;
+
+      elTitle.textContent = q ? `검색: "${q}"` : effectiveAcademy;
+
+      const st = q
+        ? computeGlobalStatsFiltered()
+        : (effectiveAcademy === "전체" ? computeGlobalStats() : computeAcademyStats(effectiveAcademy));
+
       elSubtitle.textContent = `공석 ${st.vacant} · 비공석 ${st.occupied} · 전체 ${st.total}`;
 
-      const groups = groupRows(state.academy);
+      let sections = "";
 
-      // ✅ 공석이 더 위에 오게 정렬(한눈에 보이게)
-      const sortSeats = (arr) => [...arr].sort((a,b) => Number(b.vacant) - Number(a.vacant));
+      if (!q) {
+        // 일반 모드: 선택 학원(또는 전체)
+        if (effectiveAcademy === "전체") {
+          getAcademyNames().forEach(academy => {
+            const rows = flattenAcademy(data[academy]).map(r => ({...r, academy}));
+            const filtered = sortSeats(applySearchAndStatusFilter(rows));
+            if (filtered.length === 0) return;
 
-      const sections = groups.map(g => {
-        const filtered = sortSeats(applyFilter(g.rows));
-        const vacantCount = filtered.filter(r => r.vacant).length;
-        const totalCount = filtered.length;
+            const vacantCount = filtered.filter(r => r.vacant).length;
 
-        if (totalCount === 0){
-          return `
-            <section class="group">
-              <div class="group-head">
-                <div class="group-title">
-                  <b>${g.groupName}</b>
-                  <span>표시할 항목 없음</span>
+            const cards = filtered.map(r => `
+              <div class="card ${r.vacant ? "vacant" : ""} ${r.occupied ? "occupied" : ""}">
+                <div class="card-top">
+                  <div class="name">${cleanName(r.name)}</div>
+                  <div class="tag">${r.vacant ? "공석" : "비공석"}</div>
                 </div>
-                <div class="badge">0</div>
+                <div class="hint">${academy}${r.group ? " · " + r.group : ""}</div>
               </div>
-              <div class="empty">조건에 맞는 자리가 없어.</div>
-            </section>
-          `;
+            `).join("");
+
+            sections += `
+              <section class="group">
+                <div class="group-head">
+                  <div class="group-title">
+                    <b>${academy}</b>
+                    <span>공석 ${vacantCount} / ${filtered.length}</span>
+                  </div>
+                  <div class="badge">${filtered.length}</div>
+                </div>
+                <div class="grid">${cards}</div>
+              </section>
+            `;
+          });
+        } else {
+          // 특정 학원: 그룹별
+          const value = data[effectiveAcademy];
+
+          if (Array.isArray(value)) {
+            const rows = value.map(n => ({ academy: effectiveAcademy, group:null, name:n, vacant:isVacant(n), occupied:isOccupied(n) }));
+            const filtered = sortSeats(applySearchAndStatusFilter(rows));
+            const vacantCount = filtered.filter(r => r.vacant).length;
+
+            const cards = filtered.map(r => `
+              <div class="card ${r.vacant ? "vacant" : ""} ${r.occupied ? "occupied" : ""}">
+                <div class="card-top">
+                  <div class="name">${cleanName(r.name)}</div>
+                  <div class="tag">${r.vacant ? "공석" : "비공석"}</div>
+                </div>
+                <div class="hint">${effectiveAcademy}</div>
+              </div>
+            `).join("");
+
+            sections = filtered.length ? `
+              <section class="group">
+                <div class="group-head">
+                  <div class="group-title">
+                    <b>${effectiveAcademy}</b>
+                    <span>공석 ${vacantCount} / ${filtered.length}</span>
+                  </div>
+                  <div class="badge">${filtered.length}</div>
+                </div>
+                <div class="grid">${cards}</div>
+              </section>
+            ` : "";
+          } else {
+            Object.keys(value).forEach(group => {
+              const rows = value[group].map(n => ({
+                academy: effectiveAcademy, group, name:n, vacant:isVacant(n), occupied:isOccupied(n)
+              }));
+              const filtered = sortSeats(applySearchAndStatusFilter(rows));
+              if (filtered.length === 0) return;
+
+              const vacantCount = filtered.filter(r => r.vacant).length;
+
+              const cards = filtered.map(r => `
+                <div class="card ${r.vacant ? "vacant" : ""} ${r.occupied ? "occupied" : ""}">
+                  <div class="card-top">
+                    <div class="name">${cleanName(r.name)}</div>
+                    <div class="tag">${r.vacant ? "공석" : "비공석"}</div>
+                  </div>
+                  <div class="hint">${effectiveAcademy} · ${group}</div>
+                </div>
+              `).join("");
+
+              sections += `
+                <section class="group">
+                  <div class="group-head">
+                    <div class="group-title">
+                      <b>${group}</b>
+                      <span>공석 ${vacantCount} / ${filtered.length}</span>
+                    </div>
+                    <div class="badge">${filtered.length}</div>
+                  </div>
+                  <div class="grid">${cards}</div>
+                </section>
+              `;
+            });
+          }
+        }
+      } else {
+        // ✅ 검색 모드: 전체 학원/그룹 중 "결과 있는 그룹만" 표시
+        getAcademyNames().forEach(academy => {
+          const value = data[academy];
+
+          if (Array.isArray(value)) {
+            const rows = value.map(n => ({ academy, group:null, name:n, vacant:isVacant(n), occupied:isOccupied(n) }));
+            const filtered = sortSeats(applySearchAndStatusFilter(rows));
+            if (filtered.length === 0) return;
+
+            const vacantCount = filtered.filter(r => r.vacant).length;
+
+            const cards = filtered.map(r => `
+              <div class="card ${r.vacant ? "vacant" : ""} ${r.occupied ? "occupied" : ""}">
+                <div class="card-top">
+                  <div class="name">${cleanName(r.name)}</div>
+                  <div class="tag">${r.vacant ? "공석" : "비공석"}</div>
+                </div>
+                <div class="hint">${academy}</div>
+              </div>
+            `).join("");
+
+            sections += `
+              <section class="group">
+                <div class="group-head">
+                  <div class="group-title">
+                    <b>${academy}</b>
+                    <span>공석 ${vacantCount} / ${filtered.length}</span>
+                  </div>
+                  <div class="badge">${filtered.length}</div>
+                </div>
+                <div class="grid">${cards}</div>
+              </section>
+            `;
+            return;
+          }
+
+          Object.keys(value).forEach(group => {
+            const rows = value[group].map(n => ({ academy, group, name:n, vacant:isVacant(n), occupied:isOccupied(n) }));
+            const filtered = sortSeats(applySearchAndStatusFilter(rows));
+            if (filtered.length === 0) return;
+
+            const vacantCount = filtered.filter(r => r.vacant).length;
+
+            const cards = filtered.map(r => `
+              <div class="card ${r.vacant ? "vacant" : ""} ${r.occupied ? "occupied" : ""}">
+                <div class="card-top">
+                  <div class="name">${cleanName(r.name)}</div>
+                  <div class="tag">${r.vacant ? "공석" : "비공석"}</div>
+                </div>
+                <div class="hint">${academy} · ${group}</div>
+              </div>
+            `).join("");
+
+            sections += `
+              <section class="group">
+                <div class="group-head">
+                  <div class="group-title">
+                    <b>${academy} · ${group}</b>
+                    <span>공석 ${vacantCount} / ${filtered.length}</span>
+                  </div>
+                  <div class="badge">${filtered.length}</div>
+                </div>
+                <div class="grid">${cards}</div>
+              </section>
+            `;
+          });
+        });
+      }
+
+      elContent.innerHTML = sections || `<div class="empty">조건에 맞는 결과가 없어.</div>`;
+    }
+
+    /* ===== Modal render: 탭 선택 내용 보여주기 (전체 탭도 지원) ===== */
+    function renderModalAcademy(academy){
+      elModalTitle.textContent = academy;
+
+      const q = state.search.trim();
+      let sections = "";
+
+      if (academy === "전체") {
+        // 전체 탭: 검색 중이면 검색 결과(그룹 단위), 아니면 전체(학원 단위)
+        if (!q) {
+          getAcademyNames().forEach(a => {
+            const rows = flattenAcademy(data[a]).map(r => ({...r, academy:a}));
+            const filtered = sortSeats(applySearchAndStatusFilter(rows));
+            if (filtered.length === 0) return;
+
+            const vacantCount = filtered.filter(r => r.vacant).length;
+            const cards = filtered.map(r => `
+              <div class="card ${r.vacant ? "vacant" : ""} ${r.occupied ? "occupied" : ""}">
+                <div class="card-top">
+                  <div class="name">${cleanName(r.name)}</div>
+                  <div class="tag">${r.vacant ? "공석" : "비공석"}</div>
+                </div>
+                <div class="hint">${a}${r.group ? " · " + r.group : ""}</div>
+              </div>
+            `).join("");
+
+            sections += `
+              <section class="group">
+                <div class="group-head">
+                  <div class="group-title">
+                    <b>${a}</b>
+                    <span>공석 ${vacantCount} / ${filtered.length}</span>
+                  </div>
+                  <div class="badge">${filtered.length}</div>
+                </div>
+                <div class="grid">${cards}</div>
+              </section>
+            `;
+          });
+        } else {
+          // 검색 중: renderMain 검색모드와 동일하게
+          getAcademyNames().forEach(a => {
+            const value = data[a];
+
+            if (Array.isArray(value)){
+              const rows = value.map(n => ({ academy:a, group:null, name:n, vacant:isVacant(n), occupied:isOccupied(n) }));
+              const filtered = sortSeats(applySearchAndStatusFilter(rows));
+              if (filtered.length === 0) return;
+
+              const vacantCount = filtered.filter(r => r.vacant).length;
+              const cards = filtered.map(r => `
+                <div class="card ${r.vacant ? "vacant" : ""} ${r.occupied ? "occupied" : ""}">
+                  <div class="card-top">
+                    <div class="name">${cleanName(r.name)}</div>
+                    <div class="tag">${r.vacant ? "공석" : "비공석"}</div>
+                  </div>
+                  <div class="hint">${a}</div>
+                </div>
+              `).join("");
+
+              sections += `
+                <section class="group">
+                  <div class="group-head">
+                    <div class="group-title">
+                      <b>${a}</b>
+                      <span>공석 ${vacantCount} / ${filtered.length}</span>
+                    </div>
+                    <div class="badge">${filtered.length}</div>
+                  </div>
+                  <div class="grid">${cards}</div>
+                </section>
+              `;
+              return;
+            }
+
+            Object.keys(value).forEach(g => {
+              const rows = value[g].map(n => ({ academy:a, group:g, name:n, vacant:isVacant(n), occupied:isOccupied(n) }));
+              const filtered = sortSeats(applySearchAndStatusFilter(rows));
+              if (filtered.length === 0) return;
+
+              const vacantCount = filtered.filter(r => r.vacant).length;
+              const cards = filtered.map(r => `
+                <div class="card ${r.vacant ? "vacant" : ""} ${r.occupied ? "occupied" : ""}">
+                  <div class="card-top">
+                    <div class="name">${cleanName(r.name)}</div>
+                    <div class="tag">${r.vacant ? "공석" : "비공석"}</div>
+                  </div>
+                  <div class="hint">${a} · ${g}</div>
+                </div>
+              `).join("");
+
+              sections += `
+                <section class="group">
+                  <div class="group-head">
+                    <div class="group-title">
+                      <b>${a} · ${g}</b>
+                      <span>공석 ${vacantCount} / ${filtered.length}</span>
+                    </div>
+                    <div class="badge">${filtered.length}</div>
+                  </div>
+                  <div class="grid">${cards}</div>
+                </section>
+              `;
+            });
+          });
         }
 
-        const cards = filtered.map(r => {
-          const vacant = r.vacant;      // ✅ 공석(강조)
-          const occupied = r.occupied;  // ✅ 비공석
-          return `
-            <div class="card ${vacant ? "vacant" : ""} ${occupied ? "occupied" : ""}">
-              <div class="card-top">
-                <div class="name">${cleanName(r.name)}</div>
-                <div class="tag">${vacant ? "공석" : "비공석"}</div>
-              </div>
-              <div class="hint">${r.academy}${r.group ? " · " + r.group : ""}</div>
-            </div>
-          `;
-        }).join("");
+        elModalBody.innerHTML = sections || `<div class="empty">조건에 맞는 결과가 없어.</div>`;
+        return;
+      }
 
-        return `
+      // 특정 학원 탭
+      const value = data[academy];
+
+      if (Array.isArray(value)){
+        const rows = value.map(n => ({ academy, group:null, name:n, vacant:isVacant(n), occupied:isOccupied(n) }));
+        const filtered = sortSeats(applySearchAndStatusFilter(rows));
+        const vacantCount = filtered.filter(r => r.vacant).length;
+
+        const cards = filtered.map(r => `
+          <div class="card ${r.vacant ? "vacant" : ""} ${r.occupied ? "occupied" : ""}">
+            <div class="card-top">
+              <div class="name">${cleanName(r.name)}</div>
+              <div class="tag">${r.vacant ? "공석" : "비공석"}</div>
+            </div>
+            <div class="hint">${academy}</div>
+          </div>
+        `).join("");
+
+        sections = filtered.length ? `
           <section class="group">
             <div class="group-head">
               <div class="group-title">
-                <b>${g.groupName}</b>
-                <span>공석 ${vacantCount} / ${totalCount}</span>
+                <b>${academy}</b>
+                <span>공석 ${vacantCount} / ${filtered.length}</span>
               </div>
-              <div class="badge">${totalCount}</div>
+              <div class="badge">${filtered.length}</div>
             </div>
             <div class="grid">${cards}</div>
           </section>
-        `;
-      }).join("");
+        ` : "";
+      } else {
+        Object.keys(value).forEach(group => {
+          const rows = value[group].map(n => ({ academy, group, name:n, vacant:isVacant(n), occupied:isOccupied(n) }));
+          const filtered = sortSeats(applySearchAndStatusFilter(rows));
+          if (filtered.length === 0) return;
 
-      elContent.innerHTML = sections || `<div class="empty">표시할 데이터가 없어.</div>`;
+          const vacantCount = filtered.filter(r => r.vacant).length;
+          const cards = filtered.map(r => `
+            <div class="card ${r.vacant ? "vacant" : ""} ${r.occupied ? "occupied" : ""}">
+              <div class="card-top">
+                <div class="name">${cleanName(r.name)}</div>
+                <div class="tag">${r.vacant ? "공석" : "비공석"}</div>
+              </div>
+              <div class="hint">${academy} · ${group}</div>
+            </div>
+          `).join("");
+
+          sections += `
+            <section class="group">
+              <div class="group-head">
+                <div class="group-title">
+                  <b>${group}</b>
+                  <span>공석 ${vacantCount} / ${filtered.length}</span>
+                </div>
+                <div class="badge">${filtered.length}</div>
+              </div>
+              <div class="grid">${cards}</div>
+            </section>
+          `;
+        });
+      }
+
+      elModalBody.innerHTML = sections || `<div class="empty">조건에 맞는 결과가 없어.</div>`;
     }
 
+    /* ===== Search ===== */
+    elSearch.addEventListener("input", (e) => {
+      state.search = e.target.value || "";
+
+      // 검색 결과가 바뀌면: 통계/탭/메인 전부 갱신
+      renderGlobal();
+      renderNav();
+      renderMobileStrip();
+      renderMain();
+
+      // 모달이 열려있으면 현재 탭도 갱신
+      if (elModal.classList.contains("open")) {
+        renderModalAcademy(state.academy);
+      }
+    });
+
+    /* ===== Master render ===== */
     function renderAll(){
       renderGlobal();
       renderNav();
       renderFilter();
+      renderMobileStrip();
       renderMain();
     }
-
-    document.querySelectorAll("#filterSeg button").forEach(btn => {
-      btn.addEventListener("click", () => {
-        state.filter = btn.dataset.filter;
-        renderAll();
-      });
-    });
-
-    elSearch.addEventListener("input", (e) => {
-      state.search = e.target.value || "";
-      renderMain();
-    });
 
     renderAll();
   </script>
