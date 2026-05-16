@@ -194,7 +194,8 @@
     .primary-btn,
     .sub-btn,
     .ghost-btn,
-    .danger-btn {
+    .danger-btn,
+    .choice-btn {
       cursor: pointer;
       transition: transform 0.14s ease, box-shadow 0.14s ease, opacity 0.14s ease;
     }
@@ -203,7 +204,8 @@
     .primary-btn:hover,
     .sub-btn:hover,
     .ghost-btn:hover,
-    .danger-btn:hover {
+    .danger-btn:hover,
+    .choice-btn:hover {
       transform: translateY(-1px);
     }
 
@@ -348,7 +350,6 @@
       border: 1px solid var(--line);
       border-radius: 20px;
       background: rgba(248, 251, 255, 0.86);
-      cursor: pointer;
       text-align: left;
     }
 
@@ -374,6 +375,7 @@
       justify-content: flex-end;
       gap: 10px;
       margin-top: 18px;
+      flex-wrap: wrap;
     }
 
     .primary-btn,
@@ -486,7 +488,10 @@
             <button class="ghost-btn" type="button" data-close-modal>취소</button>
             <button class="primary-btn" type="button" id="passwordSubmitBtn">확인</button>
           </div>
-          <p class="small-note">GitHub Pages에서 사용하려면 같은 저장소에 <b>password.txt</b> 파일을 만들고 비밀번호만 적어두면 됩니다.</p>
+          <p class="small-note">
+            GitHub Pages에서 사용하려면 같은 저장소에 <b>password.txt</b> 파일을 만들고,<br />
+            한 줄에 하나씩 비밀번호를 적어두면 됩니다. 예: 0000, 1111
+          </p>
         </div>
 
         <div class="step" id="categoryStep">
@@ -565,6 +570,7 @@
       try {
         const saved = localStorage.getItem(STORAGE_KEY);
         if (!saved) return;
+
         const parsed = JSON.parse(saved);
         state.data.activity = Array.isArray(parsed.activity) ? parsed.activity : [];
         state.data.roleplay = Array.isArray(parsed.roleplay) ? parsed.roleplay : [];
@@ -587,10 +593,18 @@
     }
 
     function normalizeUrl(url) {
-      const trimmed = url.trim();
+      const trimmed = String(url || "").trim();
       if (!trimmed) return "";
       if (/^https?:\/\//i.test(trimmed)) return trimmed;
       return "https://" + trimmed;
+    }
+
+    function parsePasswordText(passwordText) {
+      return String(passwordText || "")
+        .split("\n")
+        .map(line => line.replace(/\r/g, "").trim())
+        .filter(Boolean)
+        .map(line => line.replace(/^['"]|['"]$/g, ""));
     }
 
     function renderTable(type) {
@@ -682,8 +696,10 @@
       const inputPassword = passwordInput.value.trim();
 
       try {
-        const realPassword = await getPasswordFromGithubText();
-        if (inputPassword && inputPassword === realPassword) {
+        const passwordText = await getPasswordFromGithubText();
+        const passwordList = parsePasswordText(passwordText);
+
+        if (inputPassword && passwordList.includes(inputPassword)) {
           showStep("category");
           return;
         }
@@ -717,6 +733,16 @@
       clearInputs();
       characterInput.focus();
       return true;
+    }
+
+    function runSelfTests() {
+      const parsed = parsePasswordText('"0000"\n1111\r\n\'2222\'\n\n 3333 ');
+      console.assert(parsed.includes("0000"), "password parser should accept double-quoted password");
+      console.assert(parsed.includes("1111"), "password parser should accept plain password");
+      console.assert(parsed.includes("2222"), "password parser should accept single-quoted password");
+      console.assert(parsed.includes("3333"), "password parser should trim spaces");
+      console.assert(normalizeUrl("band.us/test") === "https://band.us/test", "normalizeUrl should add https://");
+      console.assert(normalizeUrl("https://band.us/test") === "https://band.us/test", "normalizeUrl should keep https://");
     }
 
     openManageBtn.addEventListener("click", openModal);
@@ -764,6 +790,7 @@
       showStep("category");
     });
 
+    runSelfTests();
     loadData();
     renderAllTables();
   </script>
