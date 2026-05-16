@@ -416,6 +416,66 @@
       line-height: 1.6;
     }
 
+    .edit-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .edit-item {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 8px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(248, 251, 255, 0.82);
+    }
+
+    .edit-info {
+      min-width: 0;
+    }
+
+    .edit-name {
+      display: block;
+      font-size: 14px;
+      font-weight: 900;
+      word-break: break-all;
+    }
+
+    .edit-type {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .mini-btn {
+      padding: 9px 11px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .mini-btn.edit {
+      color: var(--blue-dark);
+      background: rgba(91, 188, 255, 0.14);
+    }
+
+    .mini-btn.delete {
+      color: #d9416d;
+      background: rgba(255, 126, 157, 0.14);
+    }
+
+    @media (max-width: 520px) {
+      .edit-item {
+        grid-template-columns: 1fr;
+      }
+    }
+
     @media (max-width: 760px) {
       .app {
         width: min(100% - 20px, 1120px);
@@ -507,7 +567,16 @@
             </button>
           </div>
           <div class="button-row">
+            <button class="sub-btn" type="button" id="openEditStepBtn">수정/삭제</button>
             <button class="ghost-btn" type="button" data-close-modal>닫기</button>
+          </div>
+        </div>
+
+        <div class="step" id="editStep">
+          <p class="help-text">등록된 캐릭명을 수정하거나 항목을 삭제할 수 있습니다. 캐릭명만 수정되며, 연결된 URL은 그대로 유지됩니다.</p>
+          <div id="editList" class="edit-list"></div>
+          <div class="button-row">
+            <button class="ghost-btn" type="button" id="backFromEditBtn">뒤로</button>
           </div>
         </div>
 
@@ -549,6 +618,7 @@
     const passwordStep = document.getElementById("passwordStep");
     const categoryStep = document.getElementById("categoryStep");
     const inputStep = document.getElementById("inputStep");
+    const editStep = document.getElementById("editStep");
 
     const passwordInput = document.getElementById("passwordInput");
     const passwordError = document.getElementById("passwordError");
@@ -560,6 +630,9 @@
     const nextBtn = document.getElementById("nextBtn");
     const finishBtn = document.getElementById("finishBtn");
     const backToCategoryBtn = document.getElementById("backToCategoryBtn");
+    const openEditStepBtn = document.getElementById("openEditStepBtn");
+    const backFromEditBtn = document.getElementById("backFromEditBtn");
+    const editList = document.getElementById("editList");
 
     const activityTable = document.getElementById("activityTable");
     const roleplayTable = document.getElementById("roleplayTable");
@@ -654,6 +727,69 @@
       renderTable("roleplay");
     }
 
+    function getCategoryLabel(type) {
+      return type === "activity" ? "활동경고" : "캐입경고";
+    }
+
+    function renderEditList() {
+      const rows = [
+        ...state.data.activity.map((item, index) => ({ type: "activity", index, item })),
+        ...state.data.roleplay.map((item, index) => ({ type: "roleplay", index, item }))
+      ];
+
+      if (rows.length === 0) {
+        editList.innerHTML = `<div class="empty">수정하거나 삭제할 항목이 없습니다.</div>`;
+        return;
+      }
+
+      editList.innerHTML = rows.map(({ type, index, item }) => {
+        const safeName = escapeHtml(item.name);
+        const urlMark = item.url ? " · URL 연결됨" : "";
+        return `
+          <div class="edit-item">
+            <div class="edit-info">
+              <span class="edit-name">${safeName}</span>
+              <span class="edit-type">${getCategoryLabel(type)}${urlMark}</span>
+            </div>
+            <button class="mini-btn edit" type="button" data-edit-type="${type}" data-edit-index="${index}">수정</button>
+            <button class="mini-btn delete" type="button" data-delete-type="${type}" data-delete-index="${index}">삭제</button>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function editWarningName(type, index) {
+      const target = state.data[type][index];
+      if (!target) return;
+
+      const nextName = window.prompt("새 캐릭명을 입력해주세요. URL은 그대로 유지됩니다.", target.name);
+      if (nextName === null) return;
+
+      const trimmedName = nextName.trim();
+      if (!trimmedName) {
+        alert("캐릭명은 비워둘 수 없습니다.");
+        return;
+      }
+
+      target.name = trimmedName;
+      saveData();
+      renderAllTables();
+      renderEditList();
+    }
+
+    function deleteWarning(type, index) {
+      const target = state.data[type][index];
+      if (!target) return;
+
+      const ok = window.confirm(`'${target.name}' 항목을 삭제할까요?`);
+      if (!ok) return;
+
+      state.data[type].splice(index, 1);
+      saveData();
+      renderAllTables();
+      renderEditList();
+    }
+
     function openModal() {
       manageModal.classList.add("open");
       manageModal.setAttribute("aria-hidden", "false");
@@ -675,6 +811,7 @@
       passwordStep.classList.toggle("active", stepName === "password");
       categoryStep.classList.toggle("active", stepName === "category");
       inputStep.classList.toggle("active", stepName === "input");
+      editStep.classList.toggle("active", stepName === "edit");
     }
 
     function clearInputs() {
@@ -788,6 +925,29 @@
     backToCategoryBtn.addEventListener("click", () => {
       clearInputs();
       showStep("category");
+    });
+
+    openEditStepBtn.addEventListener("click", () => {
+      renderEditList();
+      showStep("edit");
+    });
+
+    backFromEditBtn.addEventListener("click", () => {
+      showStep("category");
+    });
+
+    editList.addEventListener("click", (event) => {
+      const editButton = event.target.closest("[data-edit-type]");
+      const deleteButton = event.target.closest("[data-delete-type]");
+
+      if (editButton) {
+        editWarningName(editButton.dataset.editType, Number(editButton.dataset.editIndex));
+        return;
+      }
+
+      if (deleteButton) {
+        deleteWarning(deleteButton.dataset.deleteType, Number(deleteButton.dataset.deleteIndex));
+      }
     });
 
     runSelfTests();
