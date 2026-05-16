@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blue-Hour 경고관리표</title>
+
+  <style>
+    :root {
+      --bg: #eef7ff;
+      --bg2: #f8fbff;
+      --card: rgba(255, 255, 255, 0.82);
+      --line: rgba(75, 112, 150, 0.18);
+      --text: #172033;
+      --muted: #6a7a90;
+      --blue: #5bbcff;
+      --blue-dark: #2388d1;
+      --purple: #8fa8ff;
+      --red: #ff7e9d;
+      --shadow: 0 18px 46px rgba(39, 94, 145, 0.16);
+      --radius: 24px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(91, 188, 255, 0.28), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(143, 168, 255, 0.22), transparent 36%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+    }
+
+    .app {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 42px 0 56px;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      margin-bottom: 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.62);
+      color: var(--blue-dark);
+      font-size: 13px;
+      font-weight: 800;
+      box-shadow: 0 8px 24px rgba(91, 188, 255, 0.12);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(30px, 4vw, 52px);
+      letter-spacing: -0.05em;
+      line-height: 1.05;
+    }
+
+    .hero p {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(135deg, rgba(91, 188, 255, 0.16), rgba(143, 168, 255, 0.10));
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+    }
+
+    .count-pill {
+      flex: 0 0 auto;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: rgba(255, 126, 157, 0.12);
+      color: #d9416d;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    th, td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
+      font-size: 14px;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      background: rgba(255, 255, 255, 0.46);
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .name-link {
+      color: var(--blue-dark);
+      font-weight: 900;
+      text-decoration: none;
+      word-break: break-all;
+    }
+
+    .name-link:hover {
+      text-decoration: underline;
+    }
+
+    .name-text {
+      font-weight: 900;
+      word-break: break-all;
+    }
+
+    .empty {
+      padding: 30px 18px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .strike-badge {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      min-width: 74px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255, 126, 157, 0.12);
+      color: #d9416d;
+      font-weight: 900;
+      font-size: 12px;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      margin-top: 22px;
+    }
+
+    button {
+      border: 0;
+      font-family: inherit;
+    }
+
+    .manage-btn,
+    .primary-btn,
+    .sub-btn,
+    .ghost-btn,
+    .danger-btn {
+      cursor: pointer;
+      transition: transform 0.14s ease, box-shadow 0.14s ease, opacity 0.14s ease;
+    }
+
+    .manage-btn:hover,
+    .primary-btn:hover,
+    .sub-btn:hover,
+    .ghost-btn:hover,
+    .danger-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .manage-btn {
+      padding: 14px 22px;
+      border-radius: 999px;
+      color: white;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      font-size: 15px;
+      font-weight: 900;
+      box-shadow: 0 14px 30px rgba(65, 154, 224, 0.28);
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      z-index: 50;
+    }
+
+    .modal.open {
+      display: block;
+    }
+
+    .modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(12, 23, 38, 0.48);
+      backdrop-filter: blur(7px);
+    }
+
+    .modal-card {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: min(520px, calc(100% - 32px));
+      max-height: calc(100vh - 40px);
+      transform: translate(-50%, -50%);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 28px;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 28px 90px rgba(12, 23, 38, 0.28);
+      overflow: hidden;
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(135deg, rgba(91, 188, 255, 0.16), rgba(143, 168, 255, 0.10));
+    }
+
+    .modal-head h2 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: -0.03em;
+    }
+
+    .close-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      background: rgba(23, 32, 51, 0.07);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .modal-body {
+      padding: 20px;
+      overflow: auto;
+      max-height: calc(100vh - 130px);
+    }
+
+    .step {
+      display: none;
+    }
+
+    .step.active {
+      display: block;
+    }
+
+    .help-text {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 900;
+      color: #344258;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      outline: none;
+      background: rgba(248, 251, 255, 0.9);
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    input:focus {
+      border-color: rgba(91, 188, 255, 0.8);
+      box-shadow: 0 0 0 4px rgba(91, 188, 255, 0.14);
+    }
+
+    .error {
+      display: none;
+      margin: 8px 0 0;
+      color: #d9416d;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .error.show {
+      display: block;
+    }
+
+    .choice-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .choice-btn {
+      padding: 24px 14px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(248, 251, 255, 0.86);
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .choice-btn b {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 20px;
+      letter-spacing: -0.04em;
+    }
+
+    .choice-btn span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .choice-btn:hover {
+      border-color: rgba(91, 188, 255, 0.72);
+      box-shadow: 0 12px 28px rgba(91, 188, 255, 0.16);
+    }
+
+    .button-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .primary-btn,
+    .sub-btn,
+    .ghost-btn,
+    .danger-btn {
+      padding: 12px 16px;
+      border-radius: 15px;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .primary-btn {
+      color: white;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      box-shadow: 0 10px 22px rgba(65, 154, 224, 0.22);
+    }
+
+    .sub-btn {
+      color: var(--blue-dark);
+      background: rgba(91, 188, 255, 0.14);
+    }
+
+    .ghost-btn {
+      color: #344258;
+      background: rgba(23, 32, 51, 0.07);
+    }
+
+    .danger-btn {
+      color: #d9416d;
+      background: rgba(255, 126, 157, 0.14);
+    }
+
+    .small-note {
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 760px) {
+      .app {
+        width: min(100% - 20px, 1120px);
+        padding-top: 28px;
+      }
+
+      .board {
+        grid-template-columns: 1fr;
+      }
+
+      th, td {
+        padding: 12px 10px;
+      }
+
+      .choice-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <header class="hero">
+      <div class="hero-badge">1스트라이크 2아웃제</div>
+      <h1>Blue-Hour 경고관리표</h1>
+      <p>활동경고와 캐입경고를 구분해 관리하는 표입니다.</p>
+    </header>
+
+    <section class="board" aria-label="경고관리표">
+      <article class="panel">
+        <div class="panel-head">
+          <h2 class="panel-title">활동경고</h2>
+          <span class="count-pill" id="activityCount">0명</span>
+        </div>
+        <div id="activityTable"></div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <h2 class="panel-title">캐입경고</h2>
+          <span class="count-pill" id="roleplayCount">0명</span>
+        </div>
+        <div id="roleplayTable"></div>
+      </article>
+    </section>
+
+    <div class="actions">
+      <button class="manage-btn" type="button" id="openManageBtn">관리하기</button>
+    </div>
+  </main>
+
+  <div class="modal" id="manageModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close-modal></div>
+    <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head">
+        <h2 id="modalTitle">관리창</h2>
+        <button class="close-btn" type="button" data-close-modal>×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="step active" id="passwordStep">
+          <p class="help-text">관리 비밀번호를 입력해주세요.</p>
+          <div class="field">
+            <label for="passwordInput">비밀번호</label>
+            <input id="passwordInput" type="password" placeholder="비밀번호 입력" autocomplete="current-password" />
+            <p class="error" id="passwordError">비밀번호가 일치하지 않습니다.</p>
+          </div>
+          <div class="button-row">
+            <button class="ghost-btn" type="button" data-close-modal>취소</button>
+            <button class="primary-btn" type="button" id="passwordSubmitBtn">확인</button>
+          </div>
+          <p class="small-note">GitHub Pages에서 사용하려면 같은 저장소에 <b>password.txt</b> 파일을 만들고 비밀번호만 적어두면 됩니다.</p>
+        </div>
+
+        <div class="step" id="categoryStep">
+          <p class="help-text">어느 항목으로 경고를 줄지 선택해주세요.</p>
+          <div class="choice-grid">
+            <button class="choice-btn" type="button" data-category="activity">
+              <b>활동</b>
+              <span>활동경고 표에 추가합니다.</span>
+            </button>
+            <button class="choice-btn" type="button" data-category="roleplay">
+              <b>캐입</b>
+              <span>캐입경고 표에 추가합니다.</span>
+            </button>
+          </div>
+          <div class="button-row">
+            <button class="ghost-btn" type="button" data-close-modal>닫기</button>
+          </div>
+        </div>
+
+        <div class="step" id="inputStep">
+          <p class="help-text">캐릭명과 밴드멤버주소를 입력해주세요. 밴드멤버주소는 선택사항입니다.</p>
+          <div class="field">
+            <label for="characterInput">캐릭명 <span style="color:#d9416d;">*</span></label>
+            <input id="characterInput" type="text" placeholder="예: 소라사키 히나" />
+            <p class="error" id="characterError">캐릭명은 필수 입력입니다.</p>
+          </div>
+          <div class="field">
+            <label for="memberUrlInput">밴드멤버주소</label>
+            <input id="memberUrlInput" type="url" placeholder="https://band.us/..." />
+          </div>
+          <div class="button-row">
+            <button class="danger-btn" type="button" id="finishBtn">끝</button>
+            <button class="sub-btn" type="button" id="backToCategoryBtn">항목 다시 선택</button>
+            <button class="primary-btn" type="button" id="nextBtn">다음</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const PASSWORD_FILE_URL = "./password.txt";
+    const STORAGE_KEY = "blue-hour-warning-table-v1";
+
+    const state = {
+      selectedCategory: null,
+      data: {
+        activity: [],
+        roleplay: []
+      }
+    };
+
+    const openManageBtn = document.getElementById("openManageBtn");
+    const manageModal = document.getElementById("manageModal");
+    const passwordStep = document.getElementById("passwordStep");
+    const categoryStep = document.getElementById("categoryStep");
+    const inputStep = document.getElementById("inputStep");
+
+    const passwordInput = document.getElementById("passwordInput");
+    const passwordError = document.getElementById("passwordError");
+    const passwordSubmitBtn = document.getElementById("passwordSubmitBtn");
+
+    const characterInput = document.getElementById("characterInput");
+    const memberUrlInput = document.getElementById("memberUrlInput");
+    const characterError = document.getElementById("characterError");
+    const nextBtn = document.getElementById("nextBtn");
+    const finishBtn = document.getElementById("finishBtn");
+    const backToCategoryBtn = document.getElementById("backToCategoryBtn");
+
+    const activityTable = document.getElementById("activityTable");
+    const roleplayTable = document.getElementById("roleplayTable");
+    const activityCount = document.getElementById("activityCount");
+    const roleplayCount = document.getElementById("roleplayCount");
+
+    function loadData() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) return;
+        const parsed = JSON.parse(saved);
+        state.data.activity = Array.isArray(parsed.activity) ? parsed.activity : [];
+        state.data.roleplay = Array.isArray(parsed.roleplay) ? parsed.roleplay : [];
+      } catch (error) {
+        console.warn("저장 데이터를 불러오지 못했습니다.", error);
+      }
+    }
+
+    function saveData() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data));
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function normalizeUrl(url) {
+      const trimmed = url.trim();
+      if (!trimmed) return "";
+      if (/^https?:\/\//i.test(trimmed)) return trimmed;
+      return "https://" + trimmed;
+    }
+
+    function renderTable(type) {
+      const list = state.data[type];
+      const target = type === "activity" ? activityTable : roleplayTable;
+      const countTarget = type === "activity" ? activityCount : roleplayCount;
+
+      countTarget.textContent = `${list.length}명`;
+
+      if (list.length === 0) {
+        target.innerHTML = `<div class="empty">아직 등록된 경고가 없습니다.</div>`;
+        return;
+      }
+
+      const rows = list.map((item, index) => {
+        const safeName = escapeHtml(item.name);
+        const safeUrl = escapeHtml(item.url || "");
+        const nameHtml = safeUrl
+          ? `<a class="name-link" href="${safeUrl}" target="_blank" rel="noopener noreferrer">${safeName}</a>`
+          : `<span class="name-text">${safeName}</span>`;
+
+        return `
+          <tr>
+            <td>${index + 1}</td>
+            <td>${nameHtml}</td>
+            <td><span class="strike-badge">1스트라이크</span></td>
+          </tr>
+        `;
+      }).join("");
+
+      target.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th style="width:64px;">번호</th>
+              <th>캐릭명</th>
+              <th style="width:128px;">상태</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+    }
+
+    function renderAllTables() {
+      renderTable("activity");
+      renderTable("roleplay");
+    }
+
+    function openModal() {
+      manageModal.classList.add("open");
+      manageModal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      showStep("password");
+      passwordInput.value = "";
+      passwordError.classList.remove("show");
+      setTimeout(() => passwordInput.focus(), 0);
+    }
+
+    function closeModal() {
+      manageModal.classList.remove("open");
+      manageModal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+      clearInputs();
+    }
+
+    function showStep(stepName) {
+      passwordStep.classList.toggle("active", stepName === "password");
+      categoryStep.classList.toggle("active", stepName === "category");
+      inputStep.classList.toggle("active", stepName === "input");
+    }
+
+    function clearInputs() {
+      characterInput.value = "";
+      memberUrlInput.value = "";
+      characterError.classList.remove("show");
+    }
+
+    async function getPasswordFromGithubText() {
+      const response = await fetch(PASSWORD_FILE_URL, { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error("password.txt를 불러오지 못했습니다.");
+      }
+      return (await response.text()).trim();
+    }
+
+    async function checkPassword() {
+      passwordError.classList.remove("show");
+      const inputPassword = passwordInput.value.trim();
+
+      try {
+        const realPassword = await getPasswordFromGithubText();
+        if (inputPassword && inputPassword === realPassword) {
+          showStep("category");
+          return;
+        }
+      } catch (error) {
+        console.warn(error);
+      }
+
+      passwordError.textContent = "비밀번호가 일치하지 않거나 password.txt를 불러오지 못했습니다.";
+      passwordError.classList.add("show");
+    }
+
+    function addWarningAndReset() {
+      const name = characterInput.value.trim();
+      const rawUrl = memberUrlInput.value.trim();
+
+      if (!name) {
+        characterError.classList.add("show");
+        characterInput.focus();
+        return false;
+      }
+
+      const url = normalizeUrl(rawUrl);
+      state.data[state.selectedCategory].push({
+        name,
+        url,
+        createdAt: new Date().toISOString()
+      });
+
+      saveData();
+      renderAllTables();
+      clearInputs();
+      characterInput.focus();
+      return true;
+    }
+
+    openManageBtn.addEventListener("click", openModal);
+    passwordSubmitBtn.addEventListener("click", checkPassword);
+
+    passwordInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") checkPassword();
+    });
+
+    document.querySelectorAll("[data-close-modal]").forEach((el) => {
+      el.addEventListener("click", closeModal);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && manageModal.classList.contains("open")) {
+        closeModal();
+      }
+    });
+
+    document.querySelectorAll("[data-category]").forEach((button) => {
+      button.addEventListener("click", () => {
+        state.selectedCategory = button.dataset.category;
+        clearInputs();
+        showStep("input");
+        setTimeout(() => characterInput.focus(), 0);
+      });
+    });
+
+    characterInput.addEventListener("input", () => {
+      if (characterInput.value.trim()) {
+        characterError.classList.remove("show");
+      }
+    });
+
+    nextBtn.addEventListener("click", () => {
+      addWarningAndReset();
+    });
+
+    finishBtn.addEventListener("click", () => {
+      closeModal();
+    });
+
+    backToCategoryBtn.addEventListener("click", () => {
+      clearInputs();
+      showStep("category");
+    });
+
+    loadData();
+    renderAllTables();
+  </script>
+</body>
+</html>
